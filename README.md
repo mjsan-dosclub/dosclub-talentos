@@ -341,7 +341,6 @@ Possible submission types include:
 - External Assessment
 - Reflection
 - Other Evidence
-```
 
 Submission types should be extensible.
 
@@ -1321,3 +1320,21 @@ Next specifications required:
 9. Technology-stack decision
 
 Do not begin large-scale implementation until these are reviewed.
+
+
+# 44. Development handoff — 13 September 2026
+
+Repository inspected at commit `8da68ee`. The existing product specification above remains authoritative. Work is on `feature/v1-foundation`; application implementation has not started.
+
+Supporting specifications:
+
+- [V1 and deadline demo scope](docs/product/v1-scope.md)
+- [Open product decisions](docs/product/open-decisions.md)
+- [Proposed architecture](docs/architecture/system-architecture.md)
+- [Permissions boundary](docs/architecture/permissions.md)
+- [Attendance flow](docs/architecture/attendance-flow.md)
+- [AI development rules](docs/development/ai-development-rules.md)
+- [Git and environments](docs/development/git-workflow.md)
+- [Validation strategy](docs/development/testing-strategy.md)
+
+The demo scope and proposed architecture are planning documents, not approval of unresolved policies. No application, authentication, deployment or external delivery is claimed complete. Runtime and start commands will be added with tested implementation.
