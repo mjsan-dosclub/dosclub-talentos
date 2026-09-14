@@ -1336,6 +1336,7 @@ Supporting specifications:
 - [AI development rules](docs/development/ai-development-rules.md)
 - [Git and environments](docs/development/git-workflow.md)
 - [Validation strategy](docs/development/testing-strategy.md)
+- [Deployment checklist](docs/development/deployment-checklist.md)
 
 Planning documents do not approve unresolved policies. Any missing business rule remains marked `NEEDS_PRODUCT_DECISION`.
 
