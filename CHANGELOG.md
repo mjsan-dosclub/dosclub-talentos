@@ -15,4 +15,6 @@
 - Extended invitations to trainers and college coordinators while reserving platform-administrator invitations for super admins.
 - Added server-issued QR check-in/check-out windows, optional configurable geofence validation, replay protection, attendance event history, and student scan screens.
 - Restricted the PWA cache to known public pages so invitation and attendance-token URLs are never cached.
+- Added student profile editing and narrative tool reflections without inventing maturity grades.
+- Added scoped trainer/DOS evidence review, explicit session closure, unconfirmed-absence generation, and consolidated Resend attendance reports for college coordinators.
 - Deployment and remaining operational modules are pending.

@@ -5,7 +5,8 @@ import {FormEvent,useEffect,useMemo,useState} from 'react';
 type Session={id:string;group_id:string;title:string;evidence_required:boolean;evidence_types:string[];evidence_deadline:string|null};
 type Student={user_id:string;group_id:string;name:string};
 type Absence={student_id:string;session_id:string;student_name:string;session_title:string;starts_at:string};
-type Journey={attendance:Array<{status:string;source:string;updated_at:string;title:string}>;submissions:Array<{type:string;reference:string;status:string;submitted_at:string;title:string}>;certifications:Array<{title:string;provider:string;completed_on:string;reference:string;status:string}>};
+type Journey={student:{course:string|null;department:string|null;academic_year:string|null;github_url:string|null;linkedin_url:string|null};attendance:Array<{status:string;source:string;updated_at:string;title:string}>;submissions:Array<{type:string;reference:string;status:string;submitted_at:string;title:string}>;certifications:Array<{title:string;provider:string;completed_on:string;reference:string;status:string}>;tools:Array<{tool:string;reflection:string;created_at:string}>};
+type Submission={id:string;type:string;reference:string;status:string;submitted_at:string;student_name:string;session_title:string};
 
 async function post(url:string,body:unknown){
   const response=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
@@ -26,7 +27,8 @@ export function StudentTools({sessions}:{sessions:Session[]}){
     event.preventDefault();setMessage('');const form=new FormData(event.currentTarget);
     try{
       if(kind==='evidence')await post('/api/submissions',{sessionId:form.get('sessionId'),type:form.get('type'),reference:form.get('reference')});
-      else await post('/api/certifications',{title:form.get('title'),provider:form.get('provider'),completedOn:form.get('completedOn'),reference:form.get('reference')});
+      else if(kind==='certification')await post('/api/certifications',{title:form.get('title'),provider:form.get('provider'),completedOn:form.get('completedOn'),reference:form.get('reference')});
+      else if(kind==='tool')await post('/api/tools',{tool:form.get('tool'),reflection:form.get('reflection')});
       setMessage('Added to your journey.');event.currentTarget.reset();setSelected('');load();
     }catch(error){setMessage((error as Error).message)}
   }
@@ -45,15 +47,20 @@ export function StudentTools({sessions}:{sessions:Session[]}){
         <label>Completed on<input name="completedOn" type="date" required/></label><label>Certificate link<input name="reference" type="url" required/></label>
         <button>Add certification</button>
       </form></details>
+      <details><summary>Add tool reflection</summary><form onSubmit={e=>submit('tool',e)}><label>Tool<input name="tool" required/></label><label>What can you do with it?<textarea name="reflection" minLength={10} required/></label><button>Add reflection</button></form></details>
+      {journey&&<details><summary>Update profile</summary><form onSubmit={async e=>{e.preventDefault();setMessage('');const form=new FormData(e.currentTarget);const value=(name:string)=>String(form.get(name)||'').trim()||null;try{await fetch('/api/profile',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({course:value('course'),department:value('department'),academicYear:value('academicYear'),githubUrl:value('githubUrl'),linkedinUrl:value('linkedinUrl')})}).then(async r=>{const body=await r.json();if(!r.ok)throw new Error(body.error)});setMessage('Profile updated.');load()}catch(error){setMessage((error as Error).message)}}}><label>Course<input name="course" defaultValue={journey.student.course||''}/></label><label>Department<input name="department" defaultValue={journey.student.department||''}/></label><label>Academic year<input name="academicYear" defaultValue={journey.student.academic_year||''}/></label><label>GitHub URL<input name="githubUrl" type="url" defaultValue={journey.student.github_url||''}/></label><label>LinkedIn URL<input name="linkedinUrl" type="url" defaultValue={journey.student.linkedin_url||''}/></label><button>Update profile</button></form></details>}
     </div>
     <p className="form-message" role="status" aria-live="polite">{message}</p>
     {journey&&<div className="journey-summary">
       <article><strong>{journey.attendance.length}</strong><span>attendance records</span></article>
       <article><strong>{journey.submissions.length}</strong><span>workshop submissions</span></article>
       <article><strong>{journey.certifications.length}</strong><span>certifications</span></article>
+      <article><strong>{journey.tools.length}</strong><span>tool reflections</span></article>
     </div>}
   </section>
 }
+
+export function ReviewTools({submissions}:{submissions:Submission[]}){const[message,setMessage]=useState('');const linked=new Set(['GitHub Repository','Project URL','External Assessment','Document','Image','Video']);async function review(submission:Submission,status:'Reviewed'|'Resubmission Requested'){const reason=window.prompt(status==='Reviewed'?'Review note':'Explain what should be resubmitted');if(!reason)return;try{await post('/api/submissions/review',{submissionId:submission.id,status,reason});setMessage('Review recorded with an audit trail.');setTimeout(()=>location.reload(),500)}catch(error){setMessage((error as Error).message)}}return <section className="workspace-section"><div className="workspace-section-title"><p className="eyebrow">EVIDENCE REVIEW</p><h2>Respond to the work.</h2></div>{submissions.length?<div className="review-list">{submissions.map(s=><article key={s.id}><div><p className="eyebrow">{s.status}</p><h3>{s.student_name}</h3><p>{s.session_title} · {s.type}</p>{linked.has(s.type)?<a href={s.reference} target="_blank" rel="noreferrer">Open evidence ↗</a>:<blockquote>{s.reference}</blockquote>}</div><div className="review-actions"><button onClick={()=>review(s,'Reviewed')}>Mark reviewed</button><button onClick={()=>review(s,'Resubmission Requested')}>Request resubmission</button></div></article>)}</div>:<p className="empty-copy">No submissions are waiting for review.</p>}<p className="form-message">{message}</p></section>}
 
 export function AttendanceTools({role,sessions,students,absences}:{role:string;sessions:Session[];students:Student[];absences:Absence[]}){
   const[message,setMessage]=useState('');

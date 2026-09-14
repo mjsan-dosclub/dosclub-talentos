@@ -5,6 +5,7 @@ import {FormEvent,useState} from 'react';
 type Cohort={id:string;name:string;batch:string;institution_id:string;institution:string;kind:string;capacity:number;enrolled:number};
 type Institution={id:string;name:string;kind:string};
 type Trainer={id:string;name:string};
+type Session={id:string;title:string;closed_at:string|null};
 
 async function post(url:string,body:unknown){
   const response=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
@@ -13,7 +14,7 @@ async function post(url:string,body:unknown){
   return result;
 }
 
-export function AdminTools({cohorts,institutions,trainers,actorRole}:{cohorts:Cohort[];institutions:Institution[];trainers:Trainer[];actorRole:string}){
+export function AdminTools({cohorts,institutions,trainers,sessions,actorRole}:{cohorts:Cohort[];institutions:Institution[];trainers:Trainer[];sessions:Session[];actorRole:string}){
   const[message,setMessage]=useState('');
   const[busy,setBusy]=useState('');
   const[inviteRole,setInviteRole]=useState('student');
@@ -35,6 +36,8 @@ export function AdminTools({cohorts,institutions,trainers,actorRole}:{cohorts:Co
         const required=form.get('required')==='yes';
         await post('/api/sessions',{title:form.get('title'),objective:form.get('objective'),groupId:form.get('groupId'),trainerId:form.get('trainerId')||null,startsAt:new Date(String(form.get('startsAt'))).toISOString(),endsAt:new Date(String(form.get('endsAt'))).toISOString(),mode:form.get('mode'),venue:form.get('venue'),required,types:required?[form.get('evidenceType')]:[],deadline:required?new Date(String(form.get('deadline'))).toISOString():null,reason:form.get('reason')});
       }
+      if(kind==='close')await post('/api/sessions/close',{sessionId:form.get('sessionId'),reason:form.get('reason')});
+      if(kind==='report')await post('/api/reports/attendance',{sessionId:form.get('sessionId'),reason:form.get('reason')});
       setMessage(kind==='invite'?'Invitation sent.':'Saved successfully.');
       event.currentTarget.reset();
       if(kind!=='invite')setTimeout(()=>location.reload(),500);
@@ -85,6 +88,7 @@ export function AdminTools({cohorts,institutions,trainers,actorRole}:{cohorts:Co
         {inviteRole==='student'&&<p>Invitations do not reserve capacity. The seat is confirmed when accepted.</p>}
         <button disabled={Boolean(busy)}>Send invitation</button>
       </form></details>
+      <details><summary>Close session & report</summary><form onSubmit={e=>submit('close',e)}><label>Open session<select name="sessionId" required><option value="">Choose session</option>{sessions.filter(s=>!s.closed_at).map(s=><option key={s.id} value={s.id}>{s.title}</option>)}</select></label><label>Closure reason<textarea name="reason" required/></label><p>Closing creates unconfirmed absence records only for students without attendance.</p><button disabled={Boolean(busy)}>Close session</button></form><form onSubmit={e=>submit('report',e)}><label>Closed session<select name="sessionId" required><option value="">Choose session</option>{sessions.filter(s=>s.closed_at).map(s=><option key={s.id} value={s.id}>{s.title}</option>)}</select></label><label>Reporting reason<textarea name="reason" required/></label><p>Email a consolidated attendance summary to assigned college coordinators.</p><button disabled={Boolean(busy)}>Email report</button></form></details>
     </div>
     <p className="form-message" role="status" aria-live="polite">{message}</p>
   </section>
