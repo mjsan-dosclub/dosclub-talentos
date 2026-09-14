@@ -15,7 +15,7 @@ All items below are `NEEDS_PRODUCT_DECISION`. No arbitrary production defaults a
 | PD-07 | College confirmation identity, reply/link workflow, deadlines and excused authority | Live absence confirmation |
 | PD-08 | Late evidence acceptance, resubmission and review authority | Submission policy beyond timestamp recording |
 | PD-09 | Certification verification authority and maturity transition evidence requirements | Verified credentials/maturity changes |
-| PD-10 | Transfers, withdrawn seats, waiting lists and capacity changes below enrolment | Advanced group allocation |
+| PD-10 | Transfers, withdrawn seats, waiting lists and capacity changes below enrolment | Advanced group allocation; invitation capacity is resolved separately |
 | PD-11 | Retention, consent, deletion/export handling and contact visibility | Real student data |
 | PD-12 | Assessment portal URL, authentication, identifiers and result contract | External assessment sync |
 | PD-13 | Hosting target, domain, identity/database services and provider accounts | Shared staging/production |

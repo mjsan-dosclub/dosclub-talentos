@@ -1301,11 +1301,11 @@ If the answer is no, the feature may not belong in TalentOS.
 
 # 43. Current Project Status
 
-**Stage:** Architecture / Product Definition
+**Stage:** Active V1 implementation
 
-**Implementation Status:** Not started
+**Implementation Status:** Foundation and initial operational journeys implemented
 
-**Current Priority:** Freeze V1 architecture, data model, permissions and workflow before implementation.
+**Current Priority:** Complete role workflows, connect managed services, validate staging and release to production.
 
 Next specifications required:
 
@@ -1324,7 +1324,7 @@ Do not begin large-scale implementation until these are reviewed.
 
 # 44. Development handoff — 13 September 2026
 
-Repository inspected at commit `8da68ee`. The existing product specification above remains authoritative. Work is on `feature/v1-foundation`; application implementation has not started.
+The existing product specification above remains authoritative. Work is developed on focused branches and reviewed before release.
 
 Supporting specifications:
 
@@ -1337,7 +1337,7 @@ Supporting specifications:
 - [Git and environments](docs/development/git-workflow.md)
 - [Validation strategy](docs/development/testing-strategy.md)
 
-The demo scope and proposed architecture are planning documents, not approval of unresolved policies. No application, authentication, deployment or external delivery is claimed complete. Runtime and start commands will be added with tested implementation.
+Planning documents do not approve unresolved policies. Any missing business rule remains marked `NEEDS_PRODUCT_DECISION`.
 
 
 # 45. Active build — full functional V1
@@ -1346,4 +1346,16 @@ The deadline-driven demo constraint was removed by the owner. Development now ta
 
 ## Local development
 
-Use Node.js 24 (`.nvmrc`). From the repository root, run `npm ci`, then `npm run dev`. Open http://localhost:3000. Run `npm test`, `npm run typecheck` and `npm run build` for validation. `npm start` serves a previously built application. The first increment is the public website foundation; member workflows are not yet available.
+Use Node.js 24 (`.nvmrc`). From the repository root, run `npm ci`, copy `.env.example` to `apps/web/.env.local`, and fill the local values without committing them. Run `npm run db:migrate`, then `npm run bootstrap:admin` once to create the first owner. Remove the bootstrap password immediately after it succeeds. Run `npm run dev` and open http://localhost:3000.
+
+Validate changes with `npm test`, `npm run typecheck` and `npm run build`. `npm start` serves a previously built application.
+
+## Vercel and Neon release path
+
+1. Import `descienceosclub/dosclub-talentos` into Vercel and use the repository root as the project root.
+2. Add a Neon PostgreSQL integration to the Vercel project and expose its pooled connection string as `DATABASE_URL` for Preview and Production.
+3. Add `BETTER_AUTH_URL`, a generated `BETTER_AUTH_SECRET`, `EMAIL_FROM`, and a newly rotated `RESEND_API_KEY` to each target environment. Never reuse the key exposed in chat.
+4. Run `npm run db:migrate` against the target database, bootstrap the initial owner once, and then delete the bootstrap password variable.
+5. Verify invitation acceptance, sign-in, cohort creation and session scheduling in Preview before promoting the release to Production.
+
+The approved seat policy is first-accepted, first-confirmed. Sending an invitation does not reserve capacity; accepting it atomically claims an available place.

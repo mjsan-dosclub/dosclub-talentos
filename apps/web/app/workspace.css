@@ -31,4 +31,14 @@
 .student-grid article { display: flex; gap: 20px; align-items: center; padding: 24px; background: var(--paper); }
 .student-initial { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; background: var(--green); color: var(--paper); font-family: Georgia, serif; font-size: 22px; }
 .empty-copy { color: var(--muted); }
+.tool-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.tool-grid details { background: #e7e6da; padding: 22px; align-self: start; }
+.tool-grid summary { cursor: pointer; font-family: Georgia, serif; font-size: 23px; }
+.tool-grid form { display: grid; gap: 16px; margin-top: 24px; }
+.tool-grid label { display: grid; gap: 7px; font-size: 10px; letter-spacing: 1.2px; text-transform: uppercase; }
+.tool-grid input, .tool-grid select, .tool-grid textarea { width: 100%; border: 1px solid #bdc1b2; background: var(--paper); padding: 11px; color: var(--ink); font: inherit; font-size: 14px; }
+.tool-grid textarea { min-height: 72px; resize: vertical; }
+.tool-grid button { border: 0; background: var(--ink); color: var(--paper); padding: 14px; cursor: pointer; }
+.tool-grid form p { color: var(--muted); font-size: 12px; line-height: 1.5; text-transform: none; letter-spacing: 0; }
+@media (max-width: 900px) { .tool-grid { grid-template-columns: 1fr; } }
 @media (max-width: 700px) { .access-layout { display: block; padding: 30px 6%; } .access-form { margin-top: 40px; padding: 28px; } .workspace-section-title { display: block; } .data-grid, .student-grid { grid-template-columns: 1fr; } .data-list article { grid-template-columns: 1fr; gap: 10px; } .workspace-welcome { display: block; } .text-button { margin-top: 20px; } }

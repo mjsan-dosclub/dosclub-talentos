@@ -9,6 +9,8 @@
     "dev": "next dev apps/web",
     "build": "next build apps/web",
     "start": "next start apps/web",
+    "db:migrate": "node scripts/migrate.mjs",
+    "bootstrap:admin": "node scripts/bootstrap-admin.mjs",
     "typecheck": "tsc --project apps/web/tsconfig.json --noEmit",
     "test": "node --test tests/*.test.mjs"
   },
