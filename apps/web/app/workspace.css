@@ -40,5 +40,11 @@
 .tool-grid textarea { min-height: 72px; resize: vertical; }
 .tool-grid button { border: 0; background: var(--ink); color: var(--paper); padding: 14px; cursor: pointer; }
 .tool-grid form p { color: var(--muted); font-size: 12px; line-height: 1.5; text-transform: none; letter-spacing: 0; }
+.single-tool { grid-template-columns: minmax(280px, 520px); }
+.student-tools { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.journey-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; margin-top: 30px; background: var(--line); }
+.journey-summary article { display: grid; gap: 8px; padding: 26px; background: var(--paper); }
+.journey-summary strong { font-family: Georgia, serif; font-size: 40px; font-weight: normal; }
+.journey-summary span { color: var(--muted); font-size: 12px; }
 @media (max-width: 900px) { .tool-grid { grid-template-columns: 1fr; } }
-@media (max-width: 700px) { .access-layout { display: block; padding: 30px 6%; } .access-form { margin-top: 40px; padding: 28px; } .workspace-section-title { display: block; } .data-grid, .student-grid { grid-template-columns: 1fr; } .data-list article { grid-template-columns: 1fr; gap: 10px; } .workspace-welcome { display: block; } .text-button { margin-top: 20px; } }
+@media (max-width: 700px) { .access-layout { display: block; padding: 30px 6%; } .access-form { margin-top: 40px; padding: 28px; } .workspace-section-title { display: block; } .data-grid, .student-grid, .journey-summary { grid-template-columns: 1fr; } .data-list article { grid-template-columns: 1fr; gap: 10px; } .workspace-welcome { display: block; } .text-button { margin-top: 20px; } }

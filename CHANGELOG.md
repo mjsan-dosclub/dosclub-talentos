@@ -11,4 +11,6 @@
 - Added recording and Resend email adapters. Live delivery awaits a rotated key and verified sender in Vercel.
 - Added student evidence and certification claims, student journey reads, audited trainer/DOS manual attendance, and institution-scoped college absence confirmation.
 - Added cohort and session operator forms, secure emailed invitations, first-accepted capacity enforcement, invitation acceptance, and one-time owner bootstrap scripts.
+- Added student evidence and certification forms, journey totals, trainer assignment, audited manual-attendance controls, and lightweight college absence-confirmation controls.
+- Extended invitations to trainers and college coordinators while reserving platform-administrator invitations for super admins.
 - Deployment and remaining operational modules are pending.
