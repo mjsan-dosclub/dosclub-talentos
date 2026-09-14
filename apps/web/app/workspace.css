@@ -46,5 +46,8 @@
 .journey-summary article { display: grid; gap: 8px; padding: 26px; background: var(--paper); }
 .journey-summary strong { font-family: Georgia, serif; font-size: 40px; font-weight: normal; }
 .journey-summary span { color: var(--muted); font-size: 12px; }
+.attendance-qr { display: flex; gap: 30px; align-items: center; margin-top: 28px; padding: 28px; background: #e0e4d3; }
+.attendance-qr img { width: min(240px, 42vw); height: auto; }
+.attendance-qr h3 { font-family: Georgia, serif; font-size: 28px; font-weight: normal; }
 @media (max-width: 900px) { .tool-grid { grid-template-columns: 1fr; } }
-@media (max-width: 700px) { .access-layout { display: block; padding: 30px 6%; } .access-form { margin-top: 40px; padding: 28px; } .workspace-section-title { display: block; } .data-grid, .student-grid, .journey-summary { grid-template-columns: 1fr; } .data-list article { grid-template-columns: 1fr; gap: 10px; } .workspace-welcome { display: block; } .text-button { margin-top: 20px; } }
+@media (max-width: 700px) { .access-layout { display: block; padding: 30px 6%; } .access-form { margin-top: 40px; padding: 28px; } .workspace-section-title { display: block; } .data-grid, .student-grid, .journey-summary { grid-template-columns: 1fr; } .data-list article { grid-template-columns: 1fr; gap: 10px; } .workspace-welcome, .attendance-qr { display: block; } .text-button { margin-top: 20px; } }

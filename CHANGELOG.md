@@ -13,4 +13,6 @@
 - Added cohort and session operator forms, secure emailed invitations, first-accepted capacity enforcement, invitation acceptance, and one-time owner bootstrap scripts.
 - Added student evidence and certification forms, journey totals, trainer assignment, audited manual-attendance controls, and lightweight college absence-confirmation controls.
 - Extended invitations to trainers and college coordinators while reserving platform-administrator invitations for super admins.
+- Added server-issued QR check-in/check-out windows, optional configurable geofence validation, replay protection, attendance event history, and student scan screens.
+- Restricted the PWA cache to known public pages so invitation and attendance-token URLs are never cached.
 - Deployment and remaining operational modules are pending.
