@@ -1,0 +1,4 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {safeEvidenceUrl,validateEvidenceRequirement} from '../packages/shared/evidence.mjs';
+test('no-evidence session drops types and deadline',()=>assert.deepEqual(validateEvidenceRequirement({required:false,types:['GitHub Repository'],deadline:'2026-10-01',sessionEnd:'2026-09-30'}),{required:false,types:[],deadline:null}));
+test('required evidence needs a supported type and later deadline',()=>assert.throws(()=>validateEvidenceRequirement({required:true,types:[],deadline:'2026-09-30',sessionEnd:'2026-09-30'})));
+test('evidence URL rejects embedded credentials and non-web schemes',()=>{assert.throws(()=>safeEvidenceUrl('https://name:secret@example.com'));assert.throws(()=>safeEvidenceUrl('file:///tmp/work'));assert.equal(safeEvidenceUrl('https://github.com/example/work'),'https://github.com/example/work')});

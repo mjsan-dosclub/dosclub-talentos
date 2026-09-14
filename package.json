@@ -1,0 +1,32 @@
+{
+  "name": "dosclub-talentos",
+  "private": true,
+  "version": "0.1.0",
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "scripts": {
+    "dev": "next dev apps/web",
+    "build": "next build apps/web",
+    "start": "next start apps/web",
+    "typecheck": "tsc --project apps/web/tsconfig.json --noEmit",
+    "test": "node --test tests/*.test.mjs"
+  },
+  "dependencies": {
+    "@types/pg": "^8.23.1",
+    "better-auth": "^1.7.4",
+    "next": "^16.3.5",
+    "pg": "^8.23.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "resend": "^6.28.0",
+    "zod": "^4.6.4"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.8",
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "typescript": "^5.9.3"
+  }
+}

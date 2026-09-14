@@ -1,0 +1,3 @@
+import {Resend} from 'resend';
+export type EmailIntent={id:string;to:string;subject:string;html:string};
+export async function sendEmail(intent:EmailIntent){if(!process.env.RESEND_API_KEY||!process.env.EMAIL_FROM)throw new Error('EMAIL_NOT_CONFIGURED');const resend=new Resend(process.env.RESEND_API_KEY);const result=await resend.emails.send({from:process.env.EMAIL_FROM,to:intent.to,subject:intent.subject,html:intent.html,headers:{'X-Entity-Ref-ID':intent.id}});if(result.error)throw new Error('EMAIL_DELIVERY_FAILED');return {provider:'resend',providerId:result.data?.id,status:'accepted' as const}}

@@ -1338,3 +1338,12 @@ Supporting specifications:
 - [Validation strategy](docs/development/testing-strategy.md)
 
 The demo scope and proposed architecture are planning documents, not approval of unresolved policies. No application, authentication, deployment or external delivery is claimed complete. Runtime and start commands will be added with tested implementation.
+
+
+# 45. Active build — full functional V1
+
+The deadline-driven demo constraint was removed by the owner. Development now targets the operational V1 in verified increments. See [implementation status](docs/development/implementation-status.md).
+
+## Local development
+
+Use Node.js 24 (`.nvmrc`). From the repository root, run `npm ci`, then `npm run dev`. Open http://localhost:3000. Run `npm test`, `npm run typecheck` and `npm run build` for validation. `npm start` serves a previously built application. The first increment is the public website foundation; member workflows are not yet available.
