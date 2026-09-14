@@ -1,0 +1,7 @@
+import {headers} from 'next/headers';import {auth} from './auth';import {database} from './db';
+export class HttpError extends Error{constructor(public status:number,message:string){super(message)}}
+export type Actor={id:string;name:string;role:'student'|'trainer'|'college_coordinator'|'organiser'|'super_admin';institution_id:string|null};
+export async function actor():Promise<Actor>{const session=await auth().api.getSession({headers:await headers()});if(!session)throw new HttpError(401,'Please sign in');const result=await database().query('SELECT role,institution_id FROM role_assignments WHERE user_id=$1',[session.user.id]);if(!result.rows[0])throw new HttpError(403,'Your account has not been assigned access');return {id:session.user.id,name:session.user.name,...result.rows[0]}}
+export function sameOrigin(request:Request){const expected=process.env.BETTER_AUTH_URL;if(!expected||request.headers.get('origin')!==new URL(expected).origin)throw new HttpError(403,'Invalid request origin')}
+export function operator(a:Actor){if(!['organiser','super_admin'].includes(a.role))throw new HttpError(403,'Programme operations access required')}
+export function failure(e:unknown){if(e instanceof HttpError)return Response.json({error:e.message},{status:e.status,headers:{'Cache-Control':'no-store'}});return Response.json({error:'The request could not be completed. Please try again or contact your organiser.'},{status:503,headers:{'Cache-Control':'no-store'}})}

@@ -1,0 +1,5 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {canReadStudent,canManageSession,canConfirmAbsence} from '../packages/shared/access.mjs';
+test('student cannot read another profile',()=>{const a={id:'a',role:'student'};assert.equal(canReadStudent(a,{user_id:'b'}),false);assert.equal(canReadStudent(a,{user_id:'a'}),true)});
+test('college scope is required and cannot cross institutions',()=>{assert.equal(canReadStudent({role:'college_coordinator',institution_id:'one'},{institution_id:'two'}),false);assert.equal(canReadStudent({role:'college_coordinator',institution_id:null},{institution_id:null}),false)});
+test('trainer can manage only assigned sessions',()=>{assert.equal(canManageSession({id:'a',role:'trainer'},{trainer_id:'b'}),false);assert.equal(canManageSession({id:'a',role:'trainer'},{trainer_id:'a'}),true)});
+test('organiser correction is not college confirmation',()=>{assert.equal(canConfirmAbsence({role:'organiser',institution_id:'one'},{institution_id:'one'}),false)});

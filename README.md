@@ -341,7 +341,6 @@ Possible submission types include:
 - External Assessment
 - Reflection
 - Other Evidence
-```
 
 Submission types should be extensible.
 
@@ -1302,11 +1301,11 @@ If the answer is no, the feature may not belong in TalentOS.
 
 # 43. Current Project Status
 
-**Stage:** Architecture / Product Definition
+**Stage:** Active V1 implementation
 
-**Implementation Status:** Not started
+**Implementation Status:** Foundation and initial operational journeys implemented
 
-**Current Priority:** Freeze V1 architecture, data model, permissions and workflow before implementation.
+**Current Priority:** Complete role workflows, connect managed services, validate staging and release to production.
 
 Next specifications required:
 
@@ -1321,3 +1320,43 @@ Next specifications required:
 9. Technology-stack decision
 
 Do not begin large-scale implementation until these are reviewed.
+
+
+# 44. Development handoff — 13 September 2026
+
+The existing product specification above remains authoritative. Work is developed on focused branches and reviewed before release.
+
+Supporting specifications:
+
+- [V1 and deadline demo scope](docs/product/v1-scope.md)
+- [Open product decisions](docs/product/open-decisions.md)
+- [Proposed architecture](docs/architecture/system-architecture.md)
+- [Permissions boundary](docs/architecture/permissions.md)
+- [Attendance flow](docs/architecture/attendance-flow.md)
+- [AI development rules](docs/development/ai-development-rules.md)
+- [Git and environments](docs/development/git-workflow.md)
+- [Validation strategy](docs/development/testing-strategy.md)
+- [Deployment checklist](docs/development/deployment-checklist.md)
+
+Planning documents do not approve unresolved policies. Any missing business rule remains marked `NEEDS_PRODUCT_DECISION`.
+
+
+# 45. Active build — full functional V1
+
+The deadline-driven demo constraint was removed by the owner. Development now targets the operational V1 in verified increments. See [implementation status](docs/development/implementation-status.md).
+
+## Local development
+
+Use Node.js 24 (`.nvmrc`). From the repository root, run `npm ci`, copy `.env.example` to `apps/web/.env.local`, and fill the local values without committing them. Run `npm run db:migrate`, then `npm run bootstrap:admin` once to create the first owner. Remove the bootstrap password immediately after it succeeds. Run `npm run dev` and open http://localhost:3000.
+
+Validate changes with `npm test`, `npm run typecheck` and `npm run build`. `npm start` serves a previously built application.
+
+## Vercel and Neon release path
+
+1. Import `descienceosclub/dosclub-talentos` into Vercel and use the repository root as the project root.
+2. Add a Neon PostgreSQL integration to the Vercel project and expose its pooled connection string as `DATABASE_URL` for Preview and Production.
+3. Add `BETTER_AUTH_URL`, a generated `BETTER_AUTH_SECRET`, `EMAIL_FROM`, and a newly rotated `RESEND_API_KEY` to each target environment. Never reuse the key exposed in chat.
+4. Run `npm run db:migrate` against the target database, bootstrap the initial owner once, and then delete the bootstrap password variable.
+5. Verify invitation acceptance, sign-in, cohort creation and session scheduling in Preview before promoting the release to Production.
+
+The approved seat policy is first-accepted, first-confirmed. Sending an invitation does not reserve capacity; accepting it atomically claims an available place.
