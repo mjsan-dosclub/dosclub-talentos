@@ -10,6 +10,13 @@
 .action-toast.error { background: #8b3d2f; }
 .action-toast.success { background: var(--green); }
 .action-toast button { border: 0; background: transparent; color: inherit; font-size: 22px; line-height: 1; cursor: pointer; padding: 0 2px; }
+.admin-guide { margin: 0 0 24px; padding: 18px 20px; background: #e8eadf; color: var(--muted); line-height: 1.65; font-size: 13px; }
+.admin-guide summary { color: var(--ink); cursor: pointer; font-weight: 600; }
+.cohort-manage { border-top: 1px solid var(--line); padding: 18px 0; display: grid; gap: 12px; }
+.cohort-manage form { display: flex; flex-wrap: wrap; gap: 8px; }
+.cohort-manage input { min-width: 120px; flex: 1; border: 1px solid var(--line); background: var(--paper); padding: 10px; font: inherit; }
+.cohort-manage button { border: 0; background: var(--ink); color: var(--paper); padding: 10px 14px; cursor: pointer; }
+.cohort-manage .danger-button { background: #8b3d2f; }
 .form-help, .form-message { font-size: 12px; line-height: 1.6; color: var(--muted); margin: 0; }
 .form-message { color: #7a3028; min-height: 20px; }
 .workspace-header { display: flex; justify-content: space-between; align-items: center; padding: 24px 5%; border-bottom: 1px solid var(--line); }

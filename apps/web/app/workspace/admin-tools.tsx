@@ -18,6 +18,8 @@ export function AdminTools({cohorts,institutions,trainers,sessions,actorRole}:{c
   const[message,setMessage]=useState<{text:string;kind:'success'|'error'}|null>(null);
   const[busy,setBusy]=useState('');
   const[inviteRole,setInviteRole]=useState('student');
+  async function editCohort(event:FormEvent<HTMLFormElement>,id:string){event.preventDefault();setBusy(`edit-${id}`);setMessage(null);const target=event.currentTarget;const form=new FormData(target);try{const response=await fetch('/api/cohorts',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,institution:form.get('institution'),batch:form.get('batch'),group:form.get('group'),capacity:Number(form.get('capacity')),reason:form.get('reason')})});const body=await response.json();if(!response.ok)throw new Error(body.error||'The cohort could not be updated');setMessage({text:'Cohort updated.',kind:'success'});setTimeout(()=>location.reload(),500)}catch(error){setMessage({text:(error as Error).message,kind:'error'})}finally{setBusy('')}}
+  async function deleteCohort(event:FormEvent<HTMLFormElement>,id:string){event.preventDefault();setBusy(`delete-${id}`);setMessage(null);const form=new FormData(event.currentTarget);try{const response=await fetch('/api/cohorts',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,reason:form.get('reason')})});const body=await response.json();if(!response.ok)throw new Error(body.error||'The cohort could not be deleted');setMessage({text:'Cohort deleted.',kind:'success'});setTimeout(()=>location.reload(),500)}catch(error){setMessage({text:(error as Error).message,kind:'error'})}finally{setBusy('')}}
 
   async function submit(kind:string,event:FormEvent<HTMLFormElement>){
     event.preventDefault();
@@ -48,6 +50,7 @@ export function AdminTools({cohorts,institutions,trainers,sessions,actorRole}:{c
 
   return <section className="workspace-section admin-tools">
     <div className="workspace-section-title"><p className="eyebrow">PROGRAMME TOOLS</p><h2>Prepare the next step.</h2></div>
+    <details className="admin-guide"><summary>How to create a cohort</summary><p><strong>Institution</strong> is the college or DOS Club Direct programme owner. <strong>Batch</strong> identifies the intake, such as 2026 or 3. <strong>Group</strong> is the smaller learning group inside that batch, such as Group A or Group 1. <strong>Capacity</strong> is the maximum confirmed seats; B2C defaults to 40. The <strong>reason</strong> explains why the record is being created and becomes part of the audit history.</p><p>Create one cohort only once. Student invitations do not reserve a seat; the seat is confirmed when the student accepts.</p></details>
     <div className="tool-grid">
       <details><summary>Create cohort</summary><form onSubmit={e=>submit('cohort',e)}>
         <label>Institution<input name="institution" required/></label>
@@ -58,6 +61,7 @@ export function AdminTools({cohorts,institutions,trainers,sessions,actorRole}:{c
         <label>Reason<textarea name="reason" required/></label>
         <button disabled={Boolean(busy)}>{busy==='cohort'?'Saving…':'Create cohort'}</button>
       </form></details>
+      <details><summary>Manage existing cohorts</summary>{cohorts.length===0?<p>No cohorts yet.</p>:cohorts.map(c=><div className="cohort-manage" key={c.id}><p><strong>{c.institution}</strong> · Batch {c.batch} · Group {c.name} · {c.enrolled}/{c.capacity} students</p><form onSubmit={e=>editCohort(e,c.id)}><input name="institution" defaultValue={c.institution} aria-label="Institution" required/><input name="batch" defaultValue={c.batch} aria-label="Batch" required/><input name="group" defaultValue={c.name} aria-label="Group" required/><input name="capacity" type="number" min="1" defaultValue={c.capacity} aria-label="Capacity" required/><input name="reason" placeholder="Reason for change" required/><button disabled={Boolean(busy)}>{busy===`edit-${c.id}`?'Saving…':'Save changes'}</button></form><form onSubmit={e=>deleteCohort(e,c.id)}><input name="reason" placeholder="Reason for deletion" required/><button className="danger-button" disabled={Boolean(busy)}>{busy===`delete-${c.id}`?'Deleting…':'Delete cohort'}</button></form></div>)}</details>
 
       <details><summary>Schedule session</summary><form onSubmit={e=>submit('session',e)}>
         <label>Workshop title<input name="title" required/></label>
