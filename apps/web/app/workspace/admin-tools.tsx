@@ -6,6 +6,7 @@ type Cohort={id:string;name:string;batch:string;institution_id:string;institutio
 type Institution={id:string;name:string;kind:string};
 type Trainer={id:string;name:string};
 type Session={id:string;title:string;closed_at:string|null};
+type EmailLog={id:string;email:string;name:string;role:string;email_status:string;created_at:string};
 
 async function post(url:string,body:unknown){
   const response=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
@@ -14,7 +15,7 @@ async function post(url:string,body:unknown){
   return result;
 }
 
-export function AdminTools({cohorts,institutions,trainers,sessions,actorRole}:{cohorts:Cohort[];institutions:Institution[];trainers:Trainer[];sessions:Session[];actorRole:string}){
+export function AdminTools({cohorts,institutions,trainers,sessions,emailLogs,actorRole}:{cohorts:Cohort[];institutions:Institution[];trainers:Trainer[];sessions:Session[];emailLogs:EmailLog[];actorRole:string}){
   const[message,setMessage]=useState<{text:string;kind:'success'|'error'}|null>(null);
   const[busy,setBusy]=useState('');
   const[inviteRole,setInviteRole]=useState('student');
@@ -50,7 +51,7 @@ export function AdminTools({cohorts,institutions,trainers,sessions,actorRole}:{c
 
   return <section className="workspace-section admin-tools">
     <div className="workspace-section-title"><p className="eyebrow">PROGRAMME TOOLS</p><h2>Prepare the next step.</h2></div>
-    {actorRole==='super_admin'&&<details className="admin-guide"><summary>System settings & email delivery</summary><p>Provider keys and sender identities are intentionally managed in Vercel Environment Variables. The app never stores them in the database.</p><p><strong>To enable invitations:</strong> set <code>RESEND_API_KEY</code> to a current Resend key and <code>EMAIL_FROM</code> to a sender verified in Resend, then redeploy. Existing invitations remain saved and can be retried after delivery controls are added.</p><p><a href="https://vercel.com/dosc-lub/dosclub-talentos/settings/environment-variables" target="_blank" rel="noreferrer">Open Vercel environment settings ↗</a></p></details>}
+    {actorRole==='super_admin'&&<details className="admin-guide"><summary>Email delivery log</summary>{emailLogs.length?<div className="email-log">{emailLogs.map(log=><p key={log.id}><strong>{log.email}</strong> · {log.role} · <span className={`email-status ${log.email_status.toLowerCase()}`}>{log.email_status}</span><small>{new Date(log.created_at).toLocaleString('en-IN')}</small></p>)}</div>:<p>No invitation emails have been recorded yet.</p>}</details>}
     <details className="admin-guide"><summary>How to create a cohort</summary><p><strong>Institution</strong> is the college or DOS Club Direct programme owner. <strong>Batch</strong> identifies the intake, such as 2026 or 3. <strong>Group</strong> is the smaller learning group inside that batch, such as Group A or Group 1. <strong>Capacity</strong> is the maximum confirmed seats; B2C defaults to 40. The <strong>reason</strong> explains why the record is being created and becomes part of the audit history.</p><p>Create one cohort only once. Student invitations do not reserve a seat; the seat is confirmed when the student accepts.</p></details>
     <div className="tool-grid">
       <details><summary>Create cohort</summary><form onSubmit={e=>submit('cohort',e)}>
@@ -59,7 +60,7 @@ export function AdminTools({cohorts,institutions,trainers,sessions,actorRole}:{c
         <label>Batch<input name="batch" required/></label>
         <label>Group<input name="group" required/></label>
         <label>Capacity<input name="capacity" type="number" min="1" defaultValue="40" required/></label>
-        <label>Reason<textarea name="reason" required/></label>
+        <label>Reason (optional)<textarea name="reason" placeholder="Optional note"/></label>
         <button disabled={Boolean(busy)}>{busy==='cohort'?'Saving…':'Create cohort'}</button>
       </form></details>
 
@@ -75,7 +76,7 @@ export function AdminTools({cohorts,institutions,trainers,sessions,actorRole}:{c
         <label>Evidence required?<select name="required"><option value="no">No</option><option value="yes">Yes</option></select></label>
         <label>Evidence type<select name="evidenceType"><option>GitHub Repository</option><option>Project URL</option><option>Reflection</option><option>External Assessment</option></select></label>
         <label>Evidence deadline<input name="deadline" type="datetime-local"/></label>
-        <label>Reason<textarea name="reason" required/></label>
+        <label>Reason (optional)<textarea name="reason" placeholder="Optional note"/></label>
         <button disabled={Boolean(busy)}>{busy==='session'?'Saving…':'Schedule session'}</button>
       </form></details>
 
@@ -89,11 +90,11 @@ export function AdminTools({cohorts,institutions,trainers,sessions,actorRole}:{c
         {inviteRole==='student'&&<label>Group<select name="groupId" required><option value="">Choose group</option>{cohorts.filter(c=>c.enrolled<c.capacity).map(c=><option key={c.id} value={c.id}>{c.institution} · {c.name} · {c.capacity-c.enrolled} confirmed seats open</option>)}</select></label>}
         {inviteRole==='college_coordinator'&&<label>Institution<select name="institutionId" required><option value="">Choose institution</option>{institutions.map(i=><option key={i.id} value={i.id}>{i.name}</option>)}</select></label>}
         <label>Invitation expires<input name="expiresAt" type="datetime-local" required/></label>
-        <label>Reason<textarea name="reason" required/></label>
+        <label>Reason (optional)<textarea name="reason" placeholder="Optional note"/></label>
         {inviteRole==='student'&&<p>Invitations do not reserve capacity. The seat is confirmed when accepted.</p>}
         <button disabled={Boolean(busy)}>{busy==='invite'?'Sending…':'Send invitation'}</button>
       </form></details>
-      <details><summary>Close session & report</summary><form onSubmit={e=>submit('close',e)}><label>Open session<select name="sessionId" required><option value="">Choose session</option>{sessions.filter(s=>!s.closed_at).map(s=><option key={s.id} value={s.id}>{s.title}</option>)}</select></label><label>Closure reason<textarea name="reason" required/></label><p>Closing creates unconfirmed absence records only for students without attendance.</p><button disabled={Boolean(busy)}>{busy==='close'?'Saving…':'Close session'}</button></form><form onSubmit={e=>submit('report',e)}><label>Closed session<select name="sessionId" required><option value="">Choose session</option>{sessions.filter(s=>s.closed_at).map(s=><option key={s.id} value={s.id}>{s.title}</option>)}</select></label><label>Reporting reason<textarea name="reason" required/></label><p>Email a consolidated attendance summary to assigned college coordinators.</p><button disabled={Boolean(busy)}>{busy==='report'?'Sending…':'Email report'}</button></form></details>
+      <details><summary>Close session & report</summary><form onSubmit={e=>submit('close',e)}><label>Open session<select name="sessionId" required><option value="">Choose session</option>{sessions.filter(s=>!s.closed_at).map(s=><option key={s.id} value={s.id}>{s.title}</option>)}</select></label><label>Closure reason (optional)<textarea name="reason" placeholder="Optional note"/></label><p>Closing creates unconfirmed absence records only for students without attendance.</p><button disabled={Boolean(busy)}>{busy==='close'?'Saving…':'Close session'}</button></form><form onSubmit={e=>submit('report',e)}><label>Closed session<select name="sessionId" required><option value="">Choose session</option>{sessions.filter(s=>s.closed_at).map(s=><option key={s.id} value={s.id}>{s.title}</option>)}</select></label><label>Reporting reason (optional)<textarea name="reason" placeholder="Optional note"/></label><p>Email a consolidated attendance summary to assigned college coordinators.</p><button disabled={Boolean(busy)}>{busy==='report'?'Sending…':'Email report'}</button></form></details>
     </div>
     {message&&<div className={`action-toast ${message.kind}`} role={message.kind==='error'?'alert':'status'}><span>{message.text}</span><button type="button" aria-label="Dismiss message" onClick={()=>setMessage(null)}>×</button></div>}
   </section>

@@ -17,6 +17,7 @@ type Data={
   trainers:Array<{id:string;name:string}>;
   attendance:Array<{student_id:string;session_id:string;student_name:string;session_title:string;starts_at:string}>;
   submissions:Array<{id:string;type:string;reference:string;status:string;submitted_at:string;student_name:string;session_title:string}>;
+  emailLogs:Array<{id:string;email:string;name:string;role:string;email_status:string;created_at:string}>;
 };
 
 export function Workspace(){
@@ -30,7 +31,7 @@ export function Workspace(){
   const attendanceRole=['trainer','organiser','super_admin','college_coordinator'].includes(data.actor.role);
   return <>
     <section className="workspace-welcome"><div><p className="eyebrow">{data.actor.role.replaceAll('_',' ')}</p><h1>Hello, <em>{data.actor.name}.</em></h1><p>Your TalentOS view is limited to the people and sessions assigned to your role.</p></div><button className="text-button" onClick={async()=>{await authClient.signOut();location.assign('/')}}>Sign out ↗</button></section>
-    {operator&&<AdminTools cohorts={data.cohorts} institutions={data.institutions} trainers={data.trainers} sessions={data.sessions} actorRole={data.actor.role}/>}
+    {operator&&<AdminTools cohorts={data.cohorts} institutions={data.institutions} trainers={data.trainers} sessions={data.sessions} emailLogs={data.emailLogs} actorRole={data.actor.role}/>}
     {data.actor.role==='student'&&<StudentTools sessions={data.sessions}/>}
     {attendanceRole&&<AttendanceTools role={data.actor.role} sessions={data.sessions} students={data.students} absences={data.attendance}/>}
     {['trainer','organiser','super_admin'].includes(data.actor.role)&&<ReviewTools submissions={data.submissions}/>}

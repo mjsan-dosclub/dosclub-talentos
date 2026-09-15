@@ -3,7 +3,7 @@ import {actor,failure,HttpError,operator,sameOrigin} from '../../../../lib/acces
 import {audit,database,transaction} from '../../../../lib/db';
 import {sendEmail} from '../../../../lib/email';
 
-const input=z.object({sessionId:z.string().uuid(),reason:z.string().trim().min(3).max(2000)});
+const input=z.object({sessionId:z.string().uuid(),reason:z.string().trim().max(2000).optional().default('No additional notes provided')});
 const escapeHtml=(value:string)=>value.replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[char]!));
 export async function POST(request:Request){
   try{

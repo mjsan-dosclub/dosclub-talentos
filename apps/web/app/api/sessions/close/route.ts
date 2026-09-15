@@ -2,7 +2,7 @@ import {z} from 'zod';
 import {actor,failure,HttpError,operator,sameOrigin} from '../../../../lib/access';
 import {audit,transaction} from '../../../../lib/db';
 
-const input=z.object({sessionId:z.string().uuid(),reason:z.string().trim().min(3).max(2000)});
+const input=z.object({sessionId:z.string().uuid(),reason:z.string().trim().max(2000).optional().default('No additional notes provided')});
 export async function POST(request:Request){
   try{
     sameOrigin(request);const a=await actor();operator(a);
