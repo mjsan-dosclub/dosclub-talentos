@@ -15,14 +15,14 @@ async function post(url:string,body:unknown){
 }
 
 export function AdminTools({cohorts,institutions,trainers,sessions,actorRole}:{cohorts:Cohort[];institutions:Institution[];trainers:Trainer[];sessions:Session[];actorRole:string}){
-  const[message,setMessage]=useState('');
+  const[message,setMessage]=useState<{text:string;kind:'success'|'error'}|null>(null);
   const[busy,setBusy]=useState('');
   const[inviteRole,setInviteRole]=useState('student');
 
   async function submit(kind:string,event:FormEvent<HTMLFormElement>){
     event.preventDefault();
     setBusy(kind);
-    setMessage('');
+    setMessage(null);
     const target=event.currentTarget;
     const form=new FormData(target);
     try{
@@ -39,10 +39,10 @@ export function AdminTools({cohorts,institutions,trainers,sessions,actorRole}:{c
       }
       if(kind==='close')await post('/api/sessions/close',{sessionId:form.get('sessionId'),reason:form.get('reason')});
       if(kind==='report')await post('/api/reports/attendance',{sessionId:form.get('sessionId'),reason:form.get('reason')});
-      setMessage(kind==='invite'?'Invitation sent.':'Saved successfully.');
+      setMessage({text:kind==='invite'?'Invitation sent.':'Saved successfully.',kind:'success'});
       target.reset();
       if(kind!=='invite')setTimeout(()=>location.reload(),500);
-    }catch(error){setMessage((error as Error).message)}
+    }catch(error){setMessage({text:(error as Error).message,kind:'error'})}
     finally{setBusy('')}
   }
 
@@ -56,7 +56,7 @@ export function AdminTools({cohorts,institutions,trainers,sessions,actorRole}:{c
         <label>Group<input name="group" required/></label>
         <label>Capacity<input name="capacity" type="number" min="1" defaultValue="40" required/></label>
         <label>Reason<textarea name="reason" required/></label>
-        <button disabled={Boolean(busy)}>Create cohort</button>
+        <button disabled={Boolean(busy)}>{busy==='cohort'?'Saving…':'Create cohort'}</button>
       </form></details>
 
       <details><summary>Schedule session</summary><form onSubmit={e=>submit('session',e)}>
@@ -72,7 +72,7 @@ export function AdminTools({cohorts,institutions,trainers,sessions,actorRole}:{c
         <label>Evidence type<select name="evidenceType"><option>GitHub Repository</option><option>Project URL</option><option>Reflection</option><option>External Assessment</option></select></label>
         <label>Evidence deadline<input name="deadline" type="datetime-local"/></label>
         <label>Reason<textarea name="reason" required/></label>
-        <button disabled={Boolean(busy)}>Schedule session</button>
+        <button disabled={Boolean(busy)}>{busy==='session'?'Saving…':'Schedule session'}</button>
       </form></details>
 
       <details><summary>Invite member</summary><form onSubmit={e=>submit('invite',e)}>
@@ -87,10 +87,10 @@ export function AdminTools({cohorts,institutions,trainers,sessions,actorRole}:{c
         <label>Invitation expires<input name="expiresAt" type="datetime-local" required/></label>
         <label>Reason<textarea name="reason" required/></label>
         {inviteRole==='student'&&<p>Invitations do not reserve capacity. The seat is confirmed when accepted.</p>}
-        <button disabled={Boolean(busy)}>Send invitation</button>
+        <button disabled={Boolean(busy)}>{busy==='invite'?'Sending…':'Send invitation'}</button>
       </form></details>
-      <details><summary>Close session & report</summary><form onSubmit={e=>submit('close',e)}><label>Open session<select name="sessionId" required><option value="">Choose session</option>{sessions.filter(s=>!s.closed_at).map(s=><option key={s.id} value={s.id}>{s.title}</option>)}</select></label><label>Closure reason<textarea name="reason" required/></label><p>Closing creates unconfirmed absence records only for students without attendance.</p><button disabled={Boolean(busy)}>Close session</button></form><form onSubmit={e=>submit('report',e)}><label>Closed session<select name="sessionId" required><option value="">Choose session</option>{sessions.filter(s=>s.closed_at).map(s=><option key={s.id} value={s.id}>{s.title}</option>)}</select></label><label>Reporting reason<textarea name="reason" required/></label><p>Email a consolidated attendance summary to assigned college coordinators.</p><button disabled={Boolean(busy)}>Email report</button></form></details>
+      <details><summary>Close session & report</summary><form onSubmit={e=>submit('close',e)}><label>Open session<select name="sessionId" required><option value="">Choose session</option>{sessions.filter(s=>!s.closed_at).map(s=><option key={s.id} value={s.id}>{s.title}</option>)}</select></label><label>Closure reason<textarea name="reason" required/></label><p>Closing creates unconfirmed absence records only for students without attendance.</p><button disabled={Boolean(busy)}>{busy==='close'?'Saving…':'Close session'}</button></form><form onSubmit={e=>submit('report',e)}><label>Closed session<select name="sessionId" required><option value="">Choose session</option>{sessions.filter(s=>s.closed_at).map(s=><option key={s.id} value={s.id}>{s.title}</option>)}</select></label><label>Reporting reason<textarea name="reason" required/></label><p>Email a consolidated attendance summary to assigned college coordinators.</p><button disabled={Boolean(busy)}>{busy==='report'?'Sending…':'Email report'}</button></form></details>
     </div>
-    <p className="form-message" role="status" aria-live="polite">{message}</p>
+    {message&&<div className={`action-toast ${message.kind}`} role={message.kind==='error'?'alert':'status'}><span>{message.text}</span><button type="button" aria-label="Dismiss message" onClick={()=>setMessage(null)}>×</button></div>}
   </section>
 }

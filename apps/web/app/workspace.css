@@ -6,6 +6,10 @@
 .access-form input { border: 0; border-bottom: 1px solid #8c9681; background: transparent; padding: 14px 2px; font: inherit; color: var(--ink); }
 .access-form .button { border: 0; cursor: pointer; }
 .access-form .button:disabled { opacity: .55; }
+.action-toast { position: fixed; right: 24px; bottom: 24px; z-index: 20; display: flex; align-items: center; gap: 18px; max-width: min(420px, calc(100vw - 48px)); padding: 16px 18px; color: var(--paper); background: var(--ink); box-shadow: 0 12px 30px #252b2440; font-size: 13px; line-height: 1.45; }
+.action-toast.error { background: #8b3d2f; }
+.action-toast.success { background: var(--green); }
+.action-toast button { border: 0; background: transparent; color: inherit; font-size: 22px; line-height: 1; cursor: pointer; padding: 0 2px; }
 .form-help, .form-message { font-size: 12px; line-height: 1.6; color: var(--muted); margin: 0; }
 .form-message { color: #7a3028; min-height: 20px; }
 .workspace-header { display: flex; justify-content: space-between; align-items: center; padding: 24px 5%; border-bottom: 1px solid var(--line); }
