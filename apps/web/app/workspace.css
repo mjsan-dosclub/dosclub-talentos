@@ -12,6 +12,10 @@
 .action-toast button { border: 0; background: transparent; color: inherit; font-size: 22px; line-height: 1; cursor: pointer; padding: 0 2px; }
 .admin-guide { margin: 0 0 24px; padding: 18px 20px; background: #e8eadf; color: var(--muted); line-height: 1.65; font-size: 13px; }
 .admin-guide summary { color: var(--ink); cursor: pointer; font-weight: 600; }
+.email-log p { display: grid; grid-template-columns: minmax(180px,1fr) auto auto; gap: 12px; align-items: center; border-top: 1px solid var(--line); padding: 12px 0; margin: 0; }
+.email-log small { color: var(--muted); }
+.email-status { font-size: 11px; text-transform: uppercase; letter-spacing: .8px; }
+.email-status.sent { color: var(--green); }.email-status.failed { color: #8b3d2f; }.email-status.pending { color: var(--muted); }
 .cohort-manage { border-top: 1px solid var(--line); padding: 18px 0; display: grid; gap: 12px; }
 .cohort-manage form { display: flex; flex-wrap: wrap; gap: 8px; }
 .cohort-manage input { min-width: 120px; flex: 1; border: 1px solid var(--line); background: var(--paper); padding: 10px; font: inherit; }
