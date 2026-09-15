@@ -61,7 +61,6 @@ export function AdminTools({cohorts,institutions,trainers,sessions,actorRole}:{c
         <label>Reason<textarea name="reason" required/></label>
         <button disabled={Boolean(busy)}>{busy==='cohort'?'Saving…':'Create cohort'}</button>
       </form></details>
-      <details><summary>Manage existing cohorts</summary>{cohorts.length===0?<p>No cohorts yet.</p>:cohorts.map(c=><div className="cohort-manage" key={c.id}><p><strong>{c.institution}</strong> · Batch {c.batch} · Group {c.name} · {c.enrolled}/{c.capacity} students</p><form onSubmit={e=>editCohort(e,c.id)}><input name="institution" defaultValue={c.institution} aria-label="Institution" required/><input name="batch" defaultValue={c.batch} aria-label="Batch" required/><input name="group" defaultValue={c.name} aria-label="Group" required/><input name="capacity" type="number" min="1" defaultValue={c.capacity} aria-label="Capacity" required/><input name="reason" placeholder="Reason for change" required/><button disabled={Boolean(busy)}>{busy===`edit-${c.id}`?'Saving…':'Save changes'}</button></form><form onSubmit={e=>deleteCohort(e,c.id)}><input name="reason" placeholder="Reason for deletion" required/><button className="danger-button" disabled={Boolean(busy)}>{busy===`delete-${c.id}`?'Deleting…':'Delete cohort'}</button></form></div>)}</details>
 
       <details><summary>Schedule session</summary><form onSubmit={e=>submit('session',e)}>
         <label>Workshop title<input name="title" required/></label>
