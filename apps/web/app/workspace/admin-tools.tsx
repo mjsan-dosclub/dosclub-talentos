@@ -23,7 +23,8 @@ export function AdminTools({cohorts,institutions,trainers,sessions,actorRole}:{c
     event.preventDefault();
     setBusy(kind);
     setMessage('');
-    const form=new FormData(event.currentTarget);
+    const target=event.currentTarget;
+    const form=new FormData(target);
     try{
       if(kind==='cohort')await post('/api/cohorts',{institution:form.get('institution'),kind:form.get('kind'),batch:form.get('batch'),group:form.get('group'),capacity:Number(form.get('capacity')),reason:form.get('reason')});
       if(kind==='invite')await post('/api/invitations',{
@@ -39,7 +40,7 @@ export function AdminTools({cohorts,institutions,trainers,sessions,actorRole}:{c
       if(kind==='close')await post('/api/sessions/close',{sessionId:form.get('sessionId'),reason:form.get('reason')});
       if(kind==='report')await post('/api/reports/attendance',{sessionId:form.get('sessionId'),reason:form.get('reason')});
       setMessage(kind==='invite'?'Invitation sent.':'Saved successfully.');
-      event.currentTarget.reset();
+      target.reset();
       if(kind!=='invite')setTimeout(()=>location.reload(),500);
     }catch(error){setMessage((error as Error).message)}
     finally{setBusy('')}

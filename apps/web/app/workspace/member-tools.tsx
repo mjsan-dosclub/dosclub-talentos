@@ -24,12 +24,12 @@ export function StudentTools({sessions}:{sessions:Session[]}){
   const load=()=>fetch('/api/journey',{cache:'no-store'}).then(r=>r.json()).then(setJourney).catch(()=>{});
   useEffect(()=>{void load()},[]);
   async function submit(kind:string,event:FormEvent<HTMLFormElement>){
-    event.preventDefault();setMessage('');const form=new FormData(event.currentTarget);
+    event.preventDefault();setMessage('');const target=event.currentTarget;const form=new FormData(target);
     try{
       if(kind==='evidence')await post('/api/submissions',{sessionId:form.get('sessionId'),type:form.get('type'),reference:form.get('reference')});
       else if(kind==='certification')await post('/api/certifications',{title:form.get('title'),provider:form.get('provider'),completedOn:form.get('completedOn'),reference:form.get('reference')});
       else if(kind==='tool')await post('/api/tools',{tool:form.get('tool'),reflection:form.get('reflection')});
-      setMessage('Added to your journey.');event.currentTarget.reset();setSelected('');load();
+      setMessage('Added to your journey.');target.reset();setSelected('');load();
     }catch(error){setMessage((error as Error).message)}
   }
   return <section className="workspace-section">
@@ -68,7 +68,7 @@ export function AttendanceTools({role,sessions,students,absences}:{role:string;s
   const[method,setMethod]=useState('QR');
   const[qr,setQr]=useState<{url:string;qr:string}|null>(null);
   const availableStudents=useMemo(()=>{const group=sessions.find(s=>s.id===selectedSession)?.group_id;return students.filter(s=>s.group_id===group)},[selectedSession,sessions,students]);
-  async function manual(event:FormEvent<HTMLFormElement>){event.preventDefault();const form=new FormData(event.currentTarget);try{await post('/api/attendance/manual',{studentId:form.get('studentId'),sessionId:form.get('sessionId'),reason:form.get('reason')});setMessage('Attendance recorded with an audit trail.');event.currentTarget.reset();setSelectedSession('')}catch(error){setMessage((error as Error).message)}}
+  async function manual(event:FormEvent<HTMLFormElement>){event.preventDefault();const target=event.currentTarget;const form=new FormData(target);try{await post('/api/attendance/manual',{studentId:form.get('studentId'),sessionId:form.get('sessionId'),reason:form.get('reason')});setMessage('Attendance recorded with an audit trail.');target.reset();setSelectedSession('')}catch(error){setMessage((error as Error).message)}}
   async function openWindow(event:FormEvent<HTMLFormElement>){event.preventDefault();const form=new FormData(event.currentTarget);try{const geo=method==='QR + Geofence';const result=await post('/api/attendance/windows',{sessionId:form.get('sessionId'),eventType:form.get('eventType'),method,opensAt:new Date(String(form.get('opensAt'))).toISOString(),closesAt:new Date(String(form.get('closesAt'))).toISOString(),latitude:geo?Number(form.get('latitude')):null,longitude:geo?Number(form.get('longitude')):null,radiusMeters:geo?Number(form.get('radiusMeters')):null,reason:form.get('reason')});setQr(result);setMessage('Attendance window created. Display this QR during the session.')}catch(error){setMessage((error as Error).message)}}
   async function confirm(absence:Absence){const reason=window.prompt('Reason for confirming this absence');if(!reason)return;try{await post('/api/attendance/confirm-absence',{studentId:absence.student_id,sessionId:absence.session_id,reason});setMessage('Absence confirmed.');setTimeout(()=>location.reload(),500)}catch(error){setMessage((error as Error).message)}}
   if(role==='college_coordinator')return <section className="workspace-section"><div className="workspace-section-title"><p className="eyebrow">ATTENDANCE REVIEW</p><h2>Confirm only the exceptions.</h2></div>{absences.length?<div className="data-list">{absences.map(a=><article key={a.student_id+a.session_id}><time>{new Date(a.starts_at).toLocaleDateString('en-IN')}</time><div><h3>{a.student_name}</h3><p>{a.session_title} · Unconfirmed absence</p><button className="text-button" onClick={()=>confirm(a)}>Confirm absence ↗</button></div></article>)}</div>:<p className="empty-copy">No attendance exceptions need confirmation.</p>}<p className="form-message">{message}</p></section>;
